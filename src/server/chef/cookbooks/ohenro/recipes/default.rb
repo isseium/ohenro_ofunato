@@ -8,17 +8,19 @@
 #
 log "Hello, Chef!"
 
-
-include_recipe "php"
-
-%w{httpd php php-pdo php-mysql php-apc mysql-server mysql}.each do |pkg|
+%w{httpd httpd-devel php php-devel php-pdo php-mysql php-pear mysql-server mysql pcre-devel}.each do |pkg|
   package pkg do
     action :install
   end
 end
 
-
-php_pear "apc" do
-  action :install
-  directives(:shm_size => 128, :enable_cli => 1)
+execute "devtools" do
+  user "root"
+  command 'yum -y groupinstall "Development Tools"'
+  action :run
 end
+
+# php_pear "apc" do
+#   action :install
+#   directives(:shm_size => 128, :enable_cli => 1)
+# end
