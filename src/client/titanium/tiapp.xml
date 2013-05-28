@@ -11,7 +11,7 @@
     <version>1.0</version>
     <publisher>cheekit</publisher>
     <url>http://cheekit.com</url>
-    <description></description>
+    <description>Find dinner as soon as possible</description>
     <copyright>2013 by cheekit</copyright>
     <icon>appicon.png</icon>
     <persistent-wifi>false</persistent-wifi>
