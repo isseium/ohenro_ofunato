@@ -1,0 +1,6 @@
+// aoyama.json
+{
+  "run_list" : [
+    "recipe[ohenro]"
+  ]
+}
