@@ -1,0 +1,14 @@
+<Alloy>
+  <Window id="checkindialog" class="container">
+    <View>
+      <TextArea id="comment" suppressReturn="false">
+        <Label class="hintText" text="コメント" />
+        <View id="indicator_dialog">
+          <View backgroundColor="black" opacity="0.3" />
+          <ActivityIndicator id="indicator" message="チェックインしています..."/>
+        </View>
+      </TextArea>
+    </View>
+    <Button id="checkin" />
+  </Window>
+</Alloy>

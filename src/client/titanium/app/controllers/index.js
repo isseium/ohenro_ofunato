@@ -22,6 +22,10 @@ mapView.setNavigation($.ds.nav);    // Navigationバーのセット
 
 // 地図画面に戻るたびに、情報を更新する
 $.ds.innerwin.addEventListener('focus', function(){
+    if(typeof Alloy.Globals.user === 'undefined'){
+        initUser();
+        initView();
+    }
     // token が含まれているときは情報更新を試みる
     if(typeof Alloy.Globals.user !== 'undefined' && Alloy.Globals.user.token){
         initUser();
@@ -35,9 +39,9 @@ $.ds.innerwin.add(mapView.getView());
 
 // TODO: 不明あとで聞く
 if (Ti.Platform.osname === 'iphone'){
-	$.win.open({
-		transition : Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
-	});
+    $.win.open({
+        transition : Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
+    });
 } else {
     $.win.open();
 }
@@ -51,12 +55,13 @@ if (Ti.Platform.osname === 'iphone'){
  * @return void
  */
 function setTableData(spotData){
-	var tableData = [];
-	var section = Ti.UI.createTableViewSection();
+    var tableData = [];
+    var section = Ti.UI.createTableViewSection();
 
-	// 巡礼地一覧
-	var checkinCount = 0;
-	for ( var i in spotData) {
+    // 巡礼地一覧
+    var checkinCount = 0;
+    var spotCount = 0;
+    for ( var i in spotData) {
         var args = {
             title : spotData[i].title,
             latitude : spotData[i].latitude,
@@ -69,59 +74,60 @@ function setTableData(spotData){
         if(spotData[i].checkin){
             checkinCount++;
         }
+        spotCount++;
     }
 
-	// Header の設定
-	var headerView = Ti.UI.createView({
-		height : 'auto',
-		backgroundGradient : {
-			type : "linear",
-			startPoint : {
-				x : "0%",
-				y : "0%"
-			},
-			endPoint : {
-				x : "0%",
-				y : "100%"
-			},
-			colors : [{
-				color : "#EEE",
-				offset : 0.0
-			}, {
-				color : "#CCC",
-				offset : 1.0
-			}]
-		}
-	});
+    // Header の設定
+    var headerView = Ti.UI.createView({
+        height : 'auto',
+        backgroundGradient : {
+            type : "linear",
+        startPoint : {
+            x : "0%",
+        y : "0%"
+        },
+        endPoint : {
+                       x : "0%",
+        y : "100%"
+                   },
+        colors : [{
+                     color : "#EEE",
+        offset : 0.0
+                 }, {
+                     color : "#CCC",
+        offset : 1.0
+                 }]
+        }
+    });
 
-	var headerLabel = Ti.UI.createLabel({
-		top : 8,
-		bottom : 8,
-		left : 10,
-		right : 10,
-		height : 'auto',
-		text : "巡礼地一覧",
-		font : {
-			fontSize : 18,
-			fontWeight : 'bold'
-		},
-		color : '#666666'
-	});
-	var countLabel = Ti.UI.createLabel({
-		top : 8,
-		bottom : 8,
-		right : 10,
-		height : 'auto',
-		text : "0 / 88 箇所巡礼済",
-		font : {
-			fontSize : 10,
-			fontWeight : 'bold'
-		},
-		color : '#666666'
-	});
+    var headerLabel = Ti.UI.createLabel({
+        top : 8,
+        bottom : 8,
+        left : 10,
+        right : 10,
+        height : 'auto',
+        text : Alloy.Globals.app.list_title,
+        font : {
+            fontSize : 18,
+        fontWeight : 'bold'
+        },
+        color : '#666666'
+    });
+    var countLabel = Ti.UI.createLabel({
+        top : 8,
+        bottom : 8,
+        right : 10,
+        height : 'auto',
+        text : "0 / " + spotCount + " " + Alloy.Globals.app.spot_index + "達成",
+        font : {
+            fontSize : 10,
+        fontWeight : 'bold'
+        },
+        color : '#666666'
+    });
 
     // countLabel変更
-    countLabel.text = checkinCount + " 箇所巡礼済\n残り " + (88 - checkinCount) + " 箇所";
+    countLabel.text = checkinCount + " / " + spotCount + " " + Alloy.Globals.app.spot_index + "達成\n残り " + (spotCount - checkinCount) + " " + Alloy.Globals.app.spot_index;
 
     // Viewをセット
     headerView.add(headerLabel);
@@ -129,7 +135,7 @@ function setTableData(spotData){
     section.headerView = headerView;
 
     // テーブルに追加
-	$.ds.tableView.data = [section];
+    $.ds.tableView.data = [section];
 };
 
 /**
@@ -170,23 +176,23 @@ function initUser(){
     // すでにログイン済みのときは、API をたたいてユーザ情報を取得
     var apiMapper = new ApiMapper();
     apiMapper.usermyApi(Alloy.Globals.user.token,
-        function(){
-            // 成功したとき
-            var json = eval('(' + this.responseText + ')');
-            Alloy.Globals.user.id = json.user.id;
-            Alloy.Globals.user.name = json.user.name;
-            Alloy.Globals.user.social = [];
-            for(var i=0; i<json.user.social.length; i++){
-                Alloy.Globals.user.social[i] = json.user.social[i];
+            function(){
+                // 成功したとき
+                var json = eval('(' + this.responseText + ')');
+                Alloy.Globals.user.id = json.user.id;
+                Alloy.Globals.user.name = json.user.name;
+                Alloy.Globals.user.social = [];
+                for(var i=0; i<json.user.social.length; i++){
+                    Alloy.Globals.user.social[i] = json.user.social[i];
+                }
+                Alloy.Globals.user.created_at = json.user.created_at;
+                Alloy.Globals.user.updated_at = json.user.updated_at;
+            },
+            function(){
+                // 失敗したとき
+                alert('データの取得に失敗しました。');
             }
-            Alloy.Globals.user.created_at = json.user.created_at;
-            Alloy.Globals.user.updated_at = json.user.updated_at;
-        },
-        function(){
-            // 失敗したとき
-            alert('データの取得に失敗しました。');
-        }
-    );
+            );
 }
 
 /**
@@ -197,57 +203,59 @@ function initUser(){
 function loadSpot(){
     var apiMapper = new ApiMapper();
     apiMapper.spotAllApi(
-    	function(){
-    		// 成功したとき
-            var spotData = {};
-    		var json = eval('(' + this.responseText + ')');
-    		for(i = 0; i < json.spots.length; i++){
-    		    var tmpData = new Object();
-    			tmpData.prefecture = '青森県'; //現在固定値
-    			tmpData.spot_id = json.spots[i].id;
-    			tmpData.title = json.spots[i].name;
-    			tmpData.description = json.spots[i].description;
-    			tmpData.latitude = json.spots[i].location.lat;
-    			tmpData.longitude = json.spots[i].location.lon;
-    			tmpData.checkin = false;     // checkinしたか
-    			spotData[tmpData.spot_id] = tmpData;
-    		}
+            function(){
+                // 成功したとき
+                var spotData = {};
+                var json = eval('(' + this.responseText + ')');
+                for(i = 0; i < json.spots.length; i++){
+                    var tmpData = new Object();
+                    tmpData.prefecture = '青森県'; //現在固定値
+                    tmpData.spot_id = json.spots[i].id;
+                    tmpData.title = json.spots[i].name;
+                    tmpData.description = json.spots[i].description;
+                    tmpData.latitude = json.spots[i].location.lat;
+                    tmpData.longitude = json.spots[i].location.lon;
+                    tmpData.checkin = false;     // checkinしたか
+                    tmpData.image = 'pin_before.png';
+                    spotData[tmpData.spot_id] = tmpData;
+                }
 
-            // 自分のチェックイン情報とマージする
-            // TODO: setAnnotation と setTableData を必ず実行するようにしたい（いまべたがき）
-            if( typeof Alloy.Globals.user.token != 'undefined' ){
-                apiMapper.spotMyApi(
-                    Alloy.Globals.user.token,
-                    function(){
-                        var json = eval('(' + this.responseText + ')');
-                        for(i = 0; i < json.spots.length; i++){
-                            spotData[json.spots[i].id].checkin = true;
-                            spotData[json.spots[i].id].checkin_id = json.spots[i].checkin_id;
-                            spotData[json.spots[i].id].comment = json.spots[i].comment;
-                            spotData[json.spots[i].id].checkin_time = json.spots[i].updated_at;
+                // 自分のチェックイン情報とマージする
+                // TODO: setAnnotation と setTableData を必ず実行するようにしたい（いまべたがき）
+                if( typeof Alloy.Globals.user.token != 'undefined' ){
+                    apiMapper.spotMyApi(
+                        Alloy.Globals.user.token,
+                        function(){
+                            var json = eval('(' + this.responseText + ')');
+                            for(i = 0; i < json.spots.length; i++){
+                                spotData[json.spots[i].id].checkin = true;
+                                spotData[json.spots[i].id].checkin_id = json.spots[i].checkin_id;
+                                spotData[json.spots[i].id].comment = json.spots[i].comment;
+                                spotData[json.spots[i].id].checkin_time = json.spots[i].updated_at;
+                                spotData[json.spots[i].id].image = 'pin_after.png';
+                            }
+                            mapView.setAnnotation(spotData);
+                            setTableData(spotData);
+                        } ,
+                        function(e){
+                            alert('データの取得に失敗しました。 [userMy]');
+                            Ti.API.info(this.responseText);
+                            // マスタデータのみ表示
+                            mapView.setAnnotation(spotData);
+                            setTableData(spotData);
                         }
-                        mapView.setAnnotation(spotData);
-                        setTableData(spotData);
-                    } ,
-                    function(e){
-                        alert('データの取得に失敗しました。 [userMy]');
-                        Ti.API.info(this.responseText);
-            		    // マスタデータのみ表示
-                        mapView.setAnnotation(spotData);
-                        setTableData(spotData);
-                    }
-                );
-    		}else{
-    		    // ユーザ登録していないときは、 マスタデータのみ表示
-                mapView.setAnnotation(spotData);
-                setTableData(spotData);
-    		}
-    	},
-    	function(){
-    		// 失敗したとき
-    		Alloy.Globals.user = null;
-    		alert('データの取得に失敗しました。 [spotAll]');
-    	}
+                        );
+                }else{
+                    // ユーザ登録していないときは、 マスタデータのみ表示
+                    mapView.setAnnotation(spotData);
+                    setTableData(spotData);
+                }
+            },
+        function(){
+            // 失敗したとき
+            Alloy.Globals.user = null;
+            alert('データの取得に失敗しました。 [spotAll]');
+        }
     );
 }
 
@@ -263,6 +271,7 @@ function initView(){
     }else{
         // 登録済みのとき
         $.ds.innerwin.setRightNavButton($.ds.setting);
+        
     }
 }
 
@@ -272,9 +281,10 @@ $.ds.setting.addEventListener('click', function(){
         alert('インターネットへの接続に失敗しました。電波状況のよいところで再度お試し下さい。');
         return;
     }
-
+    
     var controller = Alloy.createController('setting');
     var win = controller.getView();
+    controller.setNavigation($.ds.nav, win);
     win.title = "設定";
     $.ds.nav.title = '設定';
     $.ds.nav.open(win);
