@@ -7,11 +7,11 @@ worker_processes 2
 
 # ソケット
 #listen  '/usr/share/repos/rails_app/tmp/sockets/unicorn.sock'
-listen  '/tmp/test_iwatefoods.sock'
-pid     '/tmp/test_iwatefoods.pid'
+listen  '/tmp/prod_iwatefoods.sock'
+pid     '/tmp/prod_iwatefoods.pid'
 
 # ログ
-log = '/var/log/rails/unicorn.log'
+log = '/var/log/rails/prod_iwatefoods_unicorn.log'
 stderr_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])
 stdout_path File.expand_path('log/unicorn.log', ENV['RAILS_ROOT'])
 
