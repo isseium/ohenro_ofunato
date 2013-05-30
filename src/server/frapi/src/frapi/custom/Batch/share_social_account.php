@@ -35,8 +35,9 @@ foreach($shares as $s ){
             $client->setMethod(Zend_Http_Client::POST);
             $client->setParameterPost('status', $s["message"]);
             $response = $client->request();
-            // $data = Zend_Json::decode($response->getBody());
-            // $result = $response->getBody();
+            $data = Zend_Json::decode($response->getBody());
+            $result = $response->getBody();
+            var_dump($result, $token, $secret);
         } catch (Exception $e){
             ShareQueue::changeStatus($s["queue_id"], 9);
         }

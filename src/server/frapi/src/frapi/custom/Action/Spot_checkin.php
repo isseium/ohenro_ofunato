@@ -152,7 +152,7 @@ class Action_Spot_checkin extends Frapi_Action implements Frapi_Action_Interface
 
         // シェア設定
         // $message = "これはテストだよー time=" . $time;
-        $message = sprintf("%s (%s を巡礼しました) #ぼくの細道", mb_strimwidth($comment, 0, 80, '...'), $spot->name);
+        $message = sprintf("%s (%s にチェックイン！) #いわて食巡り", mb_strimwidth($comment, 0, 80, '...'), $spot->name);
         ShareQueue::enqueue($user, $checkin->id, $message);
 
         // レスポンス
