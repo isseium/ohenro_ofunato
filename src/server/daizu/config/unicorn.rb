@@ -7,8 +7,8 @@ worker_processes 2
 
 # ソケット
 #listen  '/usr/share/repos/rails_app/tmp/sockets/unicorn.sock'
-listen  '/tmp/unicorn.sock'
-pid     '/tmp/unicorn.pid'
+listen  '/tmp/test_iwatefoods.sock'
+pid     '/tmp/test_iwatefoods.pid'
 
 # ログ
 log = '/var/log/rails/unicorn.log'
