@@ -62,7 +62,7 @@ $.twitterButton.addEventListener('click', function(e) {
     //initialization
     var twitterApi = new TwitterApi({
         consumerKey: Alloy.Globals.app.twitter_consumer_token,
-        consumerSecret:Alloy. Globals.app.twitter_consumer_secret,
+        consumerSecret: Alloy.Globals.app.twitter_consumer_secret,
     });
     
     // いったん初期化

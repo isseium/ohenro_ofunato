@@ -3,6 +3,8 @@
 /src/client/titanium/Resources
 /src/client/titanium/app/lib/app_config.js
 /src/server/daizu/config/database.yml
+/src/server/daizu/public/assets/*
+/src/server/daizu/public/uploaded/
 *.pem
 *.swp
 *.swn
